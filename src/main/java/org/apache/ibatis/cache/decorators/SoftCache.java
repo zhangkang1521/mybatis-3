@@ -25,7 +25,7 @@ import org.apache.ibatis.cache.Cache;
 /**
  * Soft Reference cache decorator
  * Thanks to Dr. Heinz Kabutz for his guidance here.
- *
+ * 软引用，内存不足才回收
  * @author Clinton Begin
  */
 public class SoftCache implements Cache {

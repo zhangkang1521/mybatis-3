@@ -25,11 +25,13 @@ import org.apache.ibatis.cache.Cache;
 /**
  * Weak Reference cache decorator.
  * Thanks to Dr. Heinz Kabutz for his guidance here.
- *
+ * 弱引用，垃圾回收时会被回收
  * @author Clinton Begin
  */
 public class WeakCache implements Cache {
+  // 拥有强引用，避免被垃圾回收
   private final Deque<Object> hardLinksToAvoidGarbageCollection;
+  // 储存被垃圾回收了的对象，便于清除key
   private final ReferenceQueue<Object> queueOfGarbageCollectedEntries;
   private final Cache delegate;
   private int numberOfHardLinks;
@@ -72,6 +74,7 @@ public class WeakCache implements Cache {
       if (result == null) {
         delegate.removeObject(key);
       } else {
+        // 再次查询到，避免gc回收
         hardLinksToAvoidGarbageCollection.addFirst(result);
         if (hardLinksToAvoidGarbageCollection.size() > numberOfHardLinks) {
           hardLinksToAvoidGarbageCollection.removeLast();

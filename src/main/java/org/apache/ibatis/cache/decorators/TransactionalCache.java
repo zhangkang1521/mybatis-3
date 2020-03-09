@@ -112,6 +112,7 @@ public class TransactionalCache implements Cache {
   }
 
   private void flushPendingEntries() {
+    // commit的时候才真正写入缓存
     for (Map.Entry<Object, Object> entry : entriesToAddOnCommit.entrySet()) {
       delegate.putObject(entry.getKey(), entry.getValue());
     }

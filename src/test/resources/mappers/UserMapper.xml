@@ -4,7 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.zk.dao.UserDao">
 
-  <!--<cache type="org.mybatis.caches.redis.RedisCache" />-->
+  <cache type="org.apache.ibatis.cache.impl.PerpetualCache" eviction="WEAK"/>
+  <!--<cache type="org.mybatis.caches.redis.RedisCache"/>-->
 
 
 
@@ -13,6 +14,19 @@
       from tb_user u
       where u.id = #{id}
   </select>
+
+  <select id="findByIdAndUsername" resultType="user">
+     select u.*
+      from tb_user u
+      where u.id = #{id} and username = #{username}
+  </select>
+
+  <insert id="asyncBatchInsert">
+    INSERT INTO tb_user(username) values
+    <foreach collection="eventLogs" item="i" separator=",">
+      (#{i.username})
+    </foreach>
+  </insert>
 
 
 
