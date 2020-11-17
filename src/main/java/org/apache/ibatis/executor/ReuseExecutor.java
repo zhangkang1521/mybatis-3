@@ -34,6 +34,7 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
 /**
+ * 复用statement
  * @author Clinton Begin
  */
 public class ReuseExecutor extends BaseExecutor {
@@ -56,6 +57,7 @@ public class ReuseExecutor extends BaseExecutor {
   public <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
     Configuration configuration = ms.getConfiguration();
     StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, resultHandler, boundSql);
+    // 这里相比较SimpleExecutor不会关闭Statement
     Statement stmt = prepareStatement(handler, ms.getStatementLog());
     return handler.query(stmt, resultHandler);
   }
@@ -81,13 +83,13 @@ public class ReuseExecutor extends BaseExecutor {
     Statement stmt;
     BoundSql boundSql = handler.getBoundSql();
     String sql = boundSql.getSql();
-    if (hasStatementFor(sql)) {
+    if (hasStatementFor(sql)) { // 复用
       stmt = getStatement(sql);
       applyTransactionTimeout(stmt);
     } else {
       Connection connection = getConnection(statementLog);
       stmt = handler.prepare(connection, transaction.getTimeout());
-      putStatement(sql, stmt);
+      putStatement(sql, stmt); // 放入map以待下次复用
     }
     handler.parameterize(stmt);
     return stmt;

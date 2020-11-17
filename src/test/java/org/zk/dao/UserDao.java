@@ -18,6 +18,12 @@ public interface UserDao {
 
   User findByIdAndUsername(int id, String username);
 
+  void update(int id, String username);
+
+  void insert(User user);
+
   void asyncBatchInsert(@Param("eventLogs") List<User> eventLogs);
+
+
 
 }

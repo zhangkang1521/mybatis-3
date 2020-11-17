@@ -16,8 +16,10 @@ public class User implements Serializable{
     private String username;
     private Date day;
     private Boolean enable;
+    private String createTime;
     private List<Order> orderList;
     private List<Order> orderList2;
+
 
     public Integer getId() {
         return id;
@@ -65,5 +67,13 @@ public class User implements Serializable{
 
   public void setOrderList2(List<Order> orderList2) {
     this.orderList2 = orderList2;
+  }
+
+  public String getCreateTime() {
+    return createTime;
+  }
+
+  public void setCreateTime(String createTime) {
+    this.createTime = createTime;
   }
 }

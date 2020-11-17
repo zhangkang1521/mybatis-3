@@ -114,6 +114,7 @@ public abstract class BaseExecutor implements Executor {
       throw new ExecutorException("Executor was closed.");
     }
     clearLocalCache();
+    // 不同子类实现不同
     return doUpdate(ms, parameter);
   }
 
@@ -239,6 +240,7 @@ public abstract class BaseExecutor implements Executor {
       throw new ExecutorException("Cannot commit, transaction is already closed");
     }
     clearLocalCache();
+
     flushStatements();
     if (required) {
       transaction.commit();
@@ -321,6 +323,7 @@ public abstract class BaseExecutor implements Executor {
     List<E> list;
     localCache.putObject(key, EXECUTION_PLACEHOLDER);
     try {
+      // 不同子类实现
       list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
     } finally {
       localCache.removeObject(key);

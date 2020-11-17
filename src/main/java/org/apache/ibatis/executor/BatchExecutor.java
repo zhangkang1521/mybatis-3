@@ -36,6 +36,7 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
 /**
+ * 这个执行器会批量执行所有更新语句，如果 SELECT 在它们中间执行，必要时请把它们区分开来以保证行为的易读性。
  * @author Jeff Butler
  */
 public class BatchExecutor extends BaseExecutor {
@@ -74,7 +75,7 @@ public class BatchExecutor extends BaseExecutor {
       statementList.add(stmt);
       batchResultList.add(new BatchResult(ms, sql, parameterObject));
     }
-    handler.batch(stmt);
+    handler.batch(stmt); // 调用preparedStatement.addBatch()，这里并没有执行更新
     return BATCH_UPDATE_RETURN_VALUE;
   }
 
@@ -83,7 +84,7 @@ public class BatchExecutor extends BaseExecutor {
       throws SQLException {
     Statement stmt = null;
     try {
-      flushStatements();
+      flushStatements(); // 查询前执行批量更新
       Configuration configuration = ms.getConfiguration();
       StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameterObject, rowBounds, resultHandler, boundSql);
       Connection connection = getConnection(ms.getStatementLog());
@@ -108,6 +109,7 @@ public class BatchExecutor extends BaseExecutor {
     return cursor;
   }
 
+  // 查询或提交前刷新
   @Override
   public List<BatchResult> doFlushStatements(boolean isRollback) throws SQLException {
     try {
@@ -120,7 +122,7 @@ public class BatchExecutor extends BaseExecutor {
         applyTransactionTimeout(stmt);
         BatchResult batchResult = batchResultList.get(i);
         try {
-          batchResult.setUpdateCounts(stmt.executeBatch());
+          batchResult.setUpdateCounts(stmt.executeBatch()); // 执行批量更新
           MappedStatement ms = batchResult.getMappedStatement();
           List<Object> parameterObjects = batchResult.getParameterObjects();
           KeyGenerator keyGenerator = ms.getKeyGenerator();
@@ -133,7 +135,7 @@ public class BatchExecutor extends BaseExecutor {
             }
           }
           // Close statement to close cursor #1109
-          closeStatement(stmt);
+          closeStatement(stmt); // 关闭所有statement
         } catch (BatchUpdateException e) {
           StringBuilder message = new StringBuilder();
           message.append(batchResult.getMappedStatement().getId())

@@ -4,22 +4,39 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.zk.dao.UserDao">
 
-  <cache type="org.apache.ibatis.cache.impl.PerpetualCache" eviction="WEAK"/>
+  <!--<cache type="org.apache.ibatis.cache.impl.PerpetualCache" eviction="WEAK"/>-->
   <!--<cache type="org.mybatis.caches.redis.RedisCache"/>-->
 
 
+  <resultMap id="userMap" type="org.zk.domain.User">
+    <id property="id" column="id"></id>
+    <result property="username" column="username"></result>
+    <result property="createTime" column="create_time"></result>
+  </resultMap>
 
-  <select id="findById" resultType="user">
-      select u.*
+  <select id="findById" resultMap="userMap">
+      select id, username, enable, create_time
       from tb_user u
       where u.id = #{id}
   </select>
+
+  <insert id="insert" parameterType="User">
+    insert into tb_user(username, create_time) values(#{username}, #{createTime})
+  </insert>
 
   <select id="findByIdAndUsername" resultType="user">
      select u.*
       from tb_user u
       where u.id = #{id} and username = #{username}
   </select>
+
+  <update id="update">
+    update tb_user
+    set username = #{username}
+    where id = #{id}
+  </update>
+
+
 
   <insert id="asyncBatchInsert">
     INSERT INTO tb_user(username) values
