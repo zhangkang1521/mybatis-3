@@ -16,7 +16,7 @@ public interface UserDao {
 //   @SelectProvider(type = UserSqlProvider.class, method = "findById")
   User findById(int id);
 
-  User findByIdAndUsername(int id, String username);
+  User findByIdAndUsername(@Param("id") int id, @Param("username")String username);
 
   void update(int id, String username);
 

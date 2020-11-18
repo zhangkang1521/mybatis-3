@@ -26,7 +26,7 @@ public class MybatisTest {
     public void before() throws Exception {
         Reader reader = Resources.getResourceAsReader("mybatis.xml");
         sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
-        session = sqlSessionFactory.openSession(ExecutorType.BATCH);
+        session = sqlSessionFactory.openSession();
     }
 
     @After
@@ -37,7 +37,6 @@ public class MybatisTest {
     @Test
     public void testIbatis() {
       User user = session.selectOne("org.zk.dao.UserDao.findById", 1);
-      User user2 = session.selectOne("org.zk.dao.UserDao.findById", 2);
     }
 
     @Test

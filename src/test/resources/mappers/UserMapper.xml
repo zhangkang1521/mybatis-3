@@ -14,7 +14,7 @@
     <result property="createTime" column="create_time"></result>
   </resultMap>
 
-  <select id="findById" resultMap="userMap">
+  <select id="findById" resultType="User">
       select id, username, enable, create_time
       from tb_user u
       where u.id = #{id}
